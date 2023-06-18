@@ -2,6 +2,7 @@
 import Select from "react-select";
 import { networks } from "@/config";
 import { useMemo, useState } from "react";
+import { ERC20ABI, ERC1155ABI, ERC721ABI, FARMINGABI } from "@/abis";
 
 const options = networks.map((network) => ({
   value: network.name,
@@ -54,13 +55,30 @@ export default function Home() {
     if(!network) return null;
     return networks.find((item)=>item.name === network.value);
   }, [network]);
+  const [abi, setAbi] = useState('');
   console.log('info', networkInfo);
+  const eventOptions = useMemo(()=>{
+    if(!abi) return [];
+    try {
+      const abiJson = JSON.parse(abi);
+      return abiJson.filter((item)=>item.type === 'event').map((item)=>{
+        return {
+          value: item.name,
+          label: item.name,
+        }
+      });
+    } catch (error) {
+      return [];
+    }
+  }, [abi]);
+
+  
+
   return (
     <div className="container">
       <h1 className="title">Smart Contract Event Analyzer</h1>
       <div className="input-group">
-        <label>Select Network:</label>
-        <Select className="select" styles={customStyles} options={options} value={network} onChange={(e)=>{
+        <Select placeholder="Select Network..." className="select" styles={customStyles} options={options} value={network} onChange={(e)=>{
           console.log(e);
           setNetwork(e);
         }} />
@@ -115,11 +133,10 @@ export default function Home() {
       </div>
       <div className="input-group">
         <label>Input ABI string:</label>
-        <input className="input" /> &nbsp;&nbsp;&nbsp;&nbsp; <a>ERC20</a> &nbsp;&nbsp;&nbsp;&nbsp; <a>ERC721</a>
+        <input className="input" value={abi} onChange={e=>setAbi(e.target.value)} /> &nbsp;&nbsp; <a onClick={()=>setAbi(JSON.stringify(ERC20ABI))}>ERC20</a>&nbsp;&nbsp; <a onClick={()=>setAbi(JSON.stringify(ERC721ABI))}>ERC721</a>&nbsp;&nbsp; <a onClick={()=>setAbi(JSON.stringify(ERC1155ABI))}>ERC1155</a>&nbsp;&nbsp; <a onClick={()=>setAbi(JSON.stringify(FARMINGABI))}>FARMING</a>
       </div>
       <div className="input-group">
-        <label>Select Event:</label>
-        <select className="select" />
+        <Select placeholder="Select Event..." className="select" styles={customStyles} options={eventOptions} />
       </div>
       <div className="input-group">
         <label>From Block:</label>
