@@ -1,95 +1,62 @@
-import Image from 'next/image'
-import styles from './page.module.css'
-
 export default function Home() {
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+    <div className="container">
+      <h1 className="title">Smart Contract Event Analyzer</h1>
+      <div className="input-group">
+        <label>Select Network:</label>
+        <select className="select">
+          <option value="mainnet">Mainnet</option>
+        </select>
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+      <div className="network-info">
+        <h2>Network Information</h2>
+        <table className="info-table">
+          <tr>
+            <th>Properties</th>
+            <th>Value</th>
+          </tr>
+          <tr>
+            <td>Network</td>
+            <td>mainnet</td>
+          </tr>
+        </table>
       </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      <div className="input-group">
+        <label>Input Contract Address:</label>
+        <input className="input" />
       </div>
-    </main>
+      <div className="input-group">
+        <label>Input ABI string:</label>
+        <input className="input" />
+      </div>
+      <div className="input-group">
+        <label>Select Event:</label>
+        <select className="select"/>
+      </div>
+      <div className="input-group">
+        <label>From Block:</label>
+        <input className="input" />
+        <label>To Block:</label>
+        <input className="input" />
+      </div>
+      <div className="button-group">
+        <button className="button start">Start Scan</button>
+        <button className="button stop">Stop Scan</button>
+      </div>
+      <div className="progress">
+        Progress: 0%
+      </div>
+      <div className="result">
+        <h2>Result:</h2>
+        <table className="result-table">
+          <tr>
+            <th>Block</th>
+            <th>Transaction</th>
+            <th>Event</th>
+            <th>Event Data</th>
+          </tr>
+        </table>
+      </div>
+    </div>
   )
 }
