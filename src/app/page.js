@@ -1,15 +1,69 @@
 "use client";
-
+import Select from "react-select";
 import { networks } from "@/config";
+import { useMemo, useState } from "react";
+
+const options = networks.map((network) => ({
+  value: network.name,
+  label: network.name,
+}));
+
+const customStyles = {
+  control: (base) => ({
+    ...base,
+    backgroundColor: "#2C2C2C",
+    borderColor: "#2C2C2C",
+    boxShadow: "none",
+    "&:hover": {
+      borderColor: "#2C2C2C",
+    },
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: "#fff",
+  }),
+  input: (base) => ({
+    ...base,
+    color: "#fff",
+  }),
+  dropdownIndicator: (base) => ({
+    ...base,
+    color: "#fff",
+  }),
+  clearIndicator: (base) => ({
+    ...base,
+    color: "#fff",
+  }),
+  menu: (base) => ({
+    ...base,
+    backgroundColor: "#2C2C2C",
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isFocused ? "#1E1E1E" : "#2C2C2C",
+    color: "#fff",
+    "&:active": {
+      backgroundColor: "#1E1E1E",
+    },
+  }),
+};
+
 export default function Home() {
+  const [network, setNetwork] = useState(null);
+  const networkInfo = useMemo(()=>{
+    if(!network) return null;
+    return networks.find((item)=>item.name === network.value);
+  }, [network]);
+  console.log('info', networkInfo);
   return (
     <div className="container">
       <h1 className="title">Smart Contract Event Analyzer</h1>
       <div className="input-group">
         <label>Select Network:</label>
-        <select className="select">
-          <option value="mainnet">Mainnet</option>
-        </select>
+        <Select className="select" styles={customStyles} options={options} value={network} onChange={(e)=>{
+          console.log(e);
+          setNetwork(e);
+        }} />
       </div>
       <div className="network-info">
         <table className="info-table">
@@ -18,10 +72,40 @@ export default function Home() {
               <th>Properties</th>
               <th>Value</th>
             </tr>
-            <tr>
-              <td>Network</td>
-              <td>mainnet</td>
-            </tr>
+            {
+              networkInfo && Object.keys(networkInfo).map((key)=>{
+                if (['chain', 'icon', 'features', 'shortName', 'networkId', 'ens', 'slip44'].includes(key)) {
+                  return null;
+                }
+
+                if (!networkInfo[key] || networkInfo[key].length === 0) {
+                  return null;
+                }
+
+                let value = networkInfo[key].toString();
+                if (key === 'nativeCurrency') {
+                  value = JSON.stringify(networkInfo[key]);
+                }
+                if (key === 'rpc') {
+                  value = networkInfo[key].map((rpc)=>{
+                    return (<div key={rpc}>{rpc}</div>)
+                  })
+                }
+
+                if (key === 'explorers') {
+                  value = networkInfo[key].map((explorer)=>{
+                    return (<div key={explorer.url}>{explorer.url}</div>)
+                  })
+                }
+
+                return (
+                  <tr key={key}>
+                    <td>{key}</td>
+                    <td>{value}</td>
+                  </tr>
+                )
+              })
+            }
           </tbody>
         </table>
       </div>
@@ -31,7 +115,7 @@ export default function Home() {
       </div>
       <div className="input-group">
         <label>Input ABI string:</label>
-        <input className="input" />
+        <input className="input" /> &nbsp;&nbsp;&nbsp;&nbsp; <a>ERC20</a> &nbsp;&nbsp;&nbsp;&nbsp; <a>ERC721</a>
       </div>
       <div className="input-group">
         <label>Select Event:</label>

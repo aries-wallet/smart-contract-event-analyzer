@@ -84,3 +84,19 @@ body {
   color: #FF9800;
   margin-bottom: 1rem;
 }
+
+a {
+  color: #000; /* text color */
+  text-decoration: none; /* remove underline */
+  padding: 0.5rem 1rem; /* padding */
+  border-radius: 5px; /* border radius */
+  border: 1px solid #FF9800;
+  transition: background-color 0.3s ease; /* smooth color transition */
+  cursor: pointer;
+  color: white;
+}
+
+a:hover {
+  background-color: #FFA726; /* slightly lighter color on hover */
+  color: #000;
+}
