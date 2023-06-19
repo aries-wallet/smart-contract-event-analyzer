@@ -125,7 +125,7 @@ export default function Home() {
       setUpdater(Date.now());
     }
   }, [currentBlock, updater])
-  const [currentEvent, setCurrentEvent] = useState({value: '', label: ''});
+  const [currentEvent, setCurrentEvent] = useState();
   const [filter, setFilter] = useState('');
   const [filterCode, setFilterCode] = useState('');
   const [loading, setLoading] = useState(false);
