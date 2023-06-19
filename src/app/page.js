@@ -73,7 +73,6 @@ export default function Home() {
   }, [rpcOptions]);
 
   const [abi, setAbi] = useState('');
-  console.log('info', networkInfo);
   const eventOptions = useMemo(()=>{
     if(!abi) return [];
     try {
@@ -89,7 +88,6 @@ export default function Home() {
     }
   }, [abi]);
 
-  console.log('currentRpc', currentRpc);
   const [currentBlock, setCurrentBlock] = useState(0);
   useEffect(()=>{
     if (!currentRpc || !currentRpc.value) return;
@@ -131,6 +129,7 @@ export default function Home() {
   const [filter, setFilter] = useState('');
   const [filterCode, setFilterCode] = useState('');
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   return (
     <div className="container">
@@ -217,43 +216,61 @@ export default function Home() {
         <input className="input" value={step} onChange={e=>setStep(e.target.value)} />
       </div>
       <div className="button-group">
-        <button className="button start" disabled={loading} onClick={()=>{
-          console.log('start scan');
+        <button className="button start" disabled={loading} onClick={async ()=>{
           if (!currentRpc || !currentRpc.value || !scAddr || !abi || !currentEvent) {
             alert('Please input all fields');
             return;
           }
           setLoading(true);
           setEvents([]);
-          fetch('/api/scanEvents', {
-            method: 'POST',
-            body: JSON.stringify({
-              rpc: currentRpc.value,
-              scAddr,
-              abi,
-              fromBlock,
-              toBlock,
-              eventName: currentEvent.value,
-            }),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }).then((res)=>{
-            return res.json();
-          }).then((res)=>{
-            console.log('res', res);
-            setEvents(res.data);
-            setLoading(false);
-          }).catch((error)=>{
-            console.log('error', error);
-            setLoading(false);
-          });
+          setProgress(0);
+          let _events = [];
+          window.stopScan = false;
+          try {
+            let currentFrom = fromBlock;
+            let _step = Number(step);
+            while (currentFrom < toBlock && !window.stopScan) {
+              let currentTo = Math.min(currentFrom + _step, toBlock); // make sure not to exceed toBlock
+              console.log('currentFrom', currentFrom, 'currentTo', currentTo, 'step', _step);
+              let res = await fetch('/api/scanEvents', {
+                method: 'POST',
+                body: JSON.stringify({
+                  rpc: currentRpc.value,
+                  scAddr,
+                  abi,
+                  fromBlock: currentFrom,
+                  toBlock: currentTo,
+                  eventName: currentEvent.value,
+                }),
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              });
+      
+              res = await res.json();
+              _events = _events.concat(res.data); // use spread syntax to merge arrays
+              currentFrom += _step;
+              setProgress(Math.round((currentFrom - fromBlock) / (toBlock - fromBlock) * 100));
+            }
+          } catch (error) {
+              console.log('error', error);
+          }
+          console.log('_events', _events);
+          setEvents(_events);
+          setLoading(false);
+          
         }}>Start Scan</button>
-        <button className="button stop" disabled={!loading}>Stop Scan</button>
+        <button className="button stop" disabled={!loading} onClick={()=>{
+          window.stopScan = true;
+        }}>Stop Scan</button>
         <input placeholder="Input String to Filter Event..." className="input" value={filter} onChange={e=>setFilter(e.target.value)} />
         <input placeholder="Filter Code, such as: v=>Number(v.value)>100" className="input" value={filterCode} onChange={e=>setFilterCode(e.target.value)} />
       </div>
-      <div className="progress">Progress: 0%</div>
+      <div style={{display: 'flex', justifyContent: 'start'}}>
+      <div className="progress">Progress: {progress}%</div>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <div className="progress">Count: {events.length}</div>
+      </div>
       <div className="result">
         <table className="result-table">
           <tbody>
@@ -261,6 +278,7 @@ export default function Home() {
               <th>Block</th>
               <th>Transaction</th>
               <th>Event</th>
+              <th>Index</th>
               <th>Event Data</th>
             </tr>
             {
@@ -288,6 +306,7 @@ export default function Home() {
                     <td>{event.blockNumber}</td>
                     <td>{event.transactionHash}</td>
                     <td>{event.name}</td>
+                    <td>{event.index}</td>
                     <td>{JSON.stringify(event.event)}</td>
                   </tr>
                 )
