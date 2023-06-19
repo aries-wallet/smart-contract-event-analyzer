@@ -133,7 +133,7 @@ export default function Home() {
 
   return (
     <div className="container">
-      <h1 className="title">Smart Contract Event Analyzer</h1>
+      <h1 className="title">Smart Contract Event Analyzer<a href="https://github.com/aries-wallet/smart-contract-event-analyzer.git" style={{border: 'none'}}><img src='/github.png' width={32} /></a></h1>
       <div className="input-group">
         <Select placeholder="Select Network..." className="select" styles={customStyles} options={options} value={network} onChange={(e)=>{
           console.log(e);
