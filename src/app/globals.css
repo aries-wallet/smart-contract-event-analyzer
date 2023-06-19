@@ -49,12 +49,15 @@ body {
   padding: 1rem;
   border-radius: 5px;
   margin-bottom: 1rem;
+  width: 100%;
+  overflow-x: auto;
 }
 
 .info-table, .result-table {
   width: 100%;
   text-align: left;
   border-collapse: collapse;
+  overflow: auto;
 }
 
 .info-table th, .result-table th {
@@ -78,6 +81,12 @@ body {
   display: inline-block;
   margin: 0.5rem 0;
   cursor: pointer;
+}
+
+.button:disabled {
+  background-color: #7F7F7F; /* a gray color */
+  color: #B3B3B3; /* a lighter gray color */
+  cursor: not-allowed; /* changes cursor to indicate the button is disabled */
 }
 
 .button.start {
@@ -107,4 +116,8 @@ a {
 a:hover {
   background-color: #FFA726; /* slightly lighter color on hover */
   color: #000;
+}
+
+tr {
+  border-bottom: 1px solid #707070;
 }
