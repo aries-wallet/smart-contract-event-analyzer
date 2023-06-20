@@ -322,8 +322,9 @@ export default function Home() {
               return true;
             }
           }).map(v=>{
-            v.event = JSON.stringify(v.event);
-            return v;
+            let o = {...v};
+            o.event = JSON.stringify(v.event);
+            return o;
           })
 
           // Convert the object to CSV data
