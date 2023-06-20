@@ -15,7 +15,7 @@ export async function POST(req) {
 
     const provider = new ethers.JsonRpcProvider(rpc);
     const contract = new ethers.Contract(scAddr, abi, provider);
-    let ret = await contract.queryFilter(eventName, fromBlock, toBlock);
+    let ret = await contract.queryFilter(eventName, Number(fromBlock), Number(toBlock));
     ret = ret.map((item)=>{
       let v = {
         ...item,
