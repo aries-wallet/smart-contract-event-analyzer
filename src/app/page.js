@@ -227,10 +227,10 @@ export default function Home() {
           let _events = [];
           window.stopScan = false;
           try {
-            let currentFrom = fromBlock;
+            let currentFrom = Number(fromBlock);
             let _step = Number(step);
-            while (currentFrom < toBlock && !window.stopScan) {
-              let currentTo = Math.min(currentFrom + _step, toBlock); // make sure not to exceed toBlock
+            while (currentFrom < Number(toBlock) && !window.stopScan) {
+              let currentTo = Math.min(currentFrom + _step, Number(toBlock)); // make sure not to exceed toBlock
               console.log('currentFrom', currentFrom, 'currentTo', currentTo, 'step', _step);
               let res = await fetch('/api/scanEvents', {
                 method: 'POST',
@@ -250,7 +250,7 @@ export default function Home() {
               res = await res.json();
               _events = _events.concat(res.data); // use spread syntax to merge arrays
               currentFrom += _step;
-              setProgress(Math.round((currentFrom - fromBlock) / (toBlock - fromBlock) * 100));
+              setProgress(Math.round((currentFrom - Number(fromBlock)) / (Number(toBlock) - Number(fromBlock)) * 100));
             }
           } catch (error) {
               console.log('error', error);
