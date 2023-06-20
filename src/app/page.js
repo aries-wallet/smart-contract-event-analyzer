@@ -49,6 +49,43 @@ const customStyles = {
   }),
 };
 
+function objectToCsv(data) {
+  const csvRows = [];
+
+  // get the headers
+  const headers = Object.keys(data[0]);
+  csvRows.push(headers.join(','));
+
+  // loop over the rows
+  for (const row of data) {
+      const values = headers.map(header => {
+          const escaped = (''+row[header]).replace(/"/g, '\\"');
+          return `"${escaped}"`;
+      });
+      csvRows.push(values.join(','));
+  }
+
+  // form escaped CSV string
+  return csvRows.join('\n');
+}
+
+function downloadCSV(url, filename) {
+  const downloadLink = document.createElement("a");
+
+  downloadLink.href = url;
+  downloadLink.download = filename;
+
+  // Add the link to the DOM
+  document.body.appendChild(downloadLink);
+
+  // Simulate click
+  downloadLink.click();
+
+  // Cleanup the DOM
+  document.body.removeChild(downloadLink);
+}
+
+
 export default function Home() {
   const [network, setNetwork] = useState(null);
   const networkInfo = useMemo(()=>{
@@ -263,6 +300,40 @@ export default function Home() {
         <button className="button stop" disabled={!loading} onClick={()=>{
           window.stopScan = true;
         }}>Stop Scan</button>
+        <button className="button stop" disabled={loading} onClick={()=>{
+          let outObj = events.filter(event=>{
+            if (!filter) {
+              return true;
+            }
+            return JSON.stringify(event.event).toLowerCase().includes(filter.toLowerCase()) || 
+              JSON.stringify(event.transactionHash).toLowerCase().includes(filter.toLowerCase()) || 
+              JSON.stringify(event.blockNumber).toLowerCase().includes(filter.toLowerCase());
+          }).filter((event, i)=>{
+            if (!filterCode) {
+              return true;
+            }
+
+            try {
+              const f = eval(filterCode);
+              console.log('f', f);
+              return f(event.event, i);
+            } catch (e) {
+              console.log('error', e.message);
+              return true;
+            }
+          }).map(v=>{
+            v.event = JSON.stringify(v.event);
+            return v;
+          })
+
+          // Convert the object to CSV data
+          const csvData = objectToCsv(outObj);
+          const blob = new Blob([csvData], { type: 'text/csv' });
+          const url = window.URL.createObjectURL(blob);
+
+          // Initiate download
+          downloadCSV(url, "output.csv");
+        }}>Save Result to CSV</button>
         <input placeholder="Input String to Filter Event..." className="input" value={filter} onChange={e=>setFilter(e.target.value)} />
         <input placeholder="Filter Code, such as: v=>Number(v.value)>100" className="input" value={filterCode} onChange={e=>setFilterCode(e.target.value)} />
       </div>
