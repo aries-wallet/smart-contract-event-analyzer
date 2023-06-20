@@ -286,7 +286,9 @@ export default function Home() {
                 if (!filter) {
                   return true;
                 }
-                return JSON.stringify(event.event).includes(filter) || JSON.stringify(event.transactionHash).includes(filter) || JSON.stringify(event.blockNumber).includes(filter);
+                return JSON.stringify(event.event).toLowerCase().includes(filter.toLowerCase()) || 
+                  JSON.stringify(event.transactionHash).toLowerCase().includes(filter.toLowerCase()) || 
+                  JSON.stringify(event.blockNumber).toLowerCase().includes(filter.toLowerCase());
               }).filter((event, i)=>{
                 if (!filterCode) {
                   return true;
