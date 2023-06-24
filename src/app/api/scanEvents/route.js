@@ -17,10 +17,20 @@ export async function POST(req) {
     const contract = new ethers.Contract(scAddr, abi, provider);
     let ret = await contract.queryFilter(eventName, Number(fromBlock), Number(toBlock));
     ret = ret.map((item)=>{
-      let v = {
-        ...item,
-        event: item.args.toObject(),
-      };
+      let v;
+      try {
+        v = {
+          ...item,
+          event: item.args.toObject(),
+        };
+      } catch (err) {
+        console.log('err', err);
+        v = {
+          ...item,
+          event: item.args,
+        };
+      }
+      
       delete v.interface;
       delete v.provider;
       delete v.fragment;
